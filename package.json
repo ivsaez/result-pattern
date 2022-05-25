@@ -1,0 +1,17 @@
+{
+  "name": "result-pattern",
+  "version": "1.0.0",
+  "description": "Dependencyless functional result pattern implementation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "functional",
+    "result",
+    "pattern",
+    "dependencyless"
+  ],
+  "author": "Ivan Saez Zamora",
+  "license": "MIT"
+}
