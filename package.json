@@ -1,6 +1,6 @@
 {
   "name": "result-pattern",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Dependencyless functional result pattern implementation.",
   "main": "dist/index.js",
   "umd:main": "dist/index.umd.js",

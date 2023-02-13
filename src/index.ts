@@ -1,6 +1,5 @@
 export class Result<T> {
   private _success: boolean;
-  private _failure: boolean;
   private _error: string;
   private _value: T;
 
@@ -12,7 +11,6 @@ export class Result<T> {
       throw new Error("Failure result needs error message.");
 
     this._success = success;
-    this._failure = !success;
     this._error = error;
     this._value = value;
   }
@@ -22,7 +20,7 @@ export class Result<T> {
   }
 
   get failure(){
-    return this._failure;
+    return !this._success;
   }
 
   get error(){
