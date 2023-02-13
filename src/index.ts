@@ -65,4 +65,44 @@ export class Result<T> {
     
     return Result.ok<any>();
   }
+
+  public onSuccessAction(action: () => void) : Result<any>
+  {
+      if (this.failure)
+          return this;
+
+      action();
+
+      return Result.ok<T>();
+  }
+
+  public onSuccess(func: () => Result<any>) : Result<any>
+  {
+      if (this.failure)
+          return this;
+      
+      return func();
+  }
+
+  public onFailure(action: () => void) : Result<any>
+  {
+      if (this.failure)
+      {
+          action();
+      }
+
+      return this;
+  }
+
+  public onBothAction(action: (result: Result<any>) => void) : Result<any>
+  {
+      action(this);
+
+      return this;
+  }
+
+  public onBoth<T>(func: (result: Result<any>) => T) : T
+  {
+      return func(this);
+  }
 }
