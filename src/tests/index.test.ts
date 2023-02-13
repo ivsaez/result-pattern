@@ -1,3 +1,4 @@
+import { runInThisContext } from "vm";
 import { Result } from "../index";
 
 describe("Result should", () => {
@@ -167,5 +168,89 @@ describe("Result should", () => {
     expect(result.failure).toBe(true);
     expect(result.error).toBe("Whatever");
     expect(executed).toBe(2);
+  });
+
+  it("chain success result with failed one", () => {
+    let success = Result.ok("OK");
+
+    let executed = 0;
+
+    let result = success.onSuccess((value) => {
+      executed++;
+      expect(value).toBe("OK");
+      return Result.error("Failed");
+    })
+    .onFailure(error => {
+      executed++;
+      expect(error).toBe("Failed");
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.failure).toBe(true);
+    expect(result.error).toBe("Failed");
+    expect(executed).toBe(2);
+  });
+
+  it("execute async on success", async () => {
+    let success = Result.ok("OK");
+
+    let executed = false;
+
+    async function runAsyncMethod(): Promise<void>{
+      executed = true;
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    let result = await success.onSuccessAsync(async (value) => {
+      await runAsyncMethod();
+      expect(value).toBe("OK");
+      return Result.ok(value);
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.failure).toBe(false);
+    expect(result.value).toBe("OK");
+    expect(executed).toBe(true);
+  });
+
+  it("chain async methods", async () => {
+    let success = Result.ok("OK");
+    let anotherSuccess = Result.ok("Fine");
+
+    let executed = 0;
+
+    async function runAsyncMethod(): Promise<Result<any>>{
+      executed++;
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return anotherSuccess;
+    }
+
+    async function runAsyncMethodAction(): Promise<void>{
+      executed++;
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    let result = await success.onSuccess((value) => {
+      executed++;
+      expect(value).toBe("OK");
+      return Result.ok(value);
+    })
+    .onSuccessAsync(async (value) => {
+      expect(value).toBe("OK");
+      return runAsyncMethod();
+    })
+    .then(r => r.onSuccessAsync(async value => {
+      expect(value).toBe("Fine");
+      return Result.error("Failed");
+    }))
+    .then(r => r.onFailureAsync(async error => {
+      runAsyncMethodAction();
+      expect(error).toBe("Failed");
+    }));
+
+    expect(result.success).toBe(false);
+    expect(result.failure).toBe(true);
+    expect(result.error).toBe("Failed");
+    expect(executed).toBe(3);
   });
 });

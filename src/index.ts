@@ -76,12 +76,30 @@ export class Result<T> {
       return Result.ok<T>(this.value);
   }
 
+  public async onSuccessActionAsync(action: (result: T) => Promise<void>) : Promise<Result<any>>
+  {
+      if (this.failure)
+          return this;
+
+      await action(this.value);
+
+      return Result.ok<T>(this.value);
+  }
+
   public onSuccess(func: (result: T) => Result<any>) : Result<any>
   {
       if (this.failure)
           return this;
       
       return func(this.value);
+  }
+
+  public async onSuccessAsync(func: (result: T) => Promise<Result<any>>) : Promise<Result<any>>
+  {
+      if (this.failure)
+          return this;
+      
+      return await func(this.value);
   }
 
   public onFailure(action: (error: string) => void) : Result<any>
@@ -94,6 +112,16 @@ export class Result<T> {
       return this;
   }
 
+  public async onFailureAsync(action: (error: string) => Promise<void>) : Promise<Result<any>>
+  {
+      if (this.failure)
+      {
+          await action(this.error);
+      }
+
+      return this;
+  }
+
   public onBothAction(action: (result: Result<any>) => void) : Result<any>
   {
       action(this);
@@ -101,8 +129,20 @@ export class Result<T> {
       return this;
   }
 
+  public async onBothActionAsync(action: (result: Result<any>) => Promise<void>) : Promise<Result<any>>
+  {
+      await action(this);
+
+      return this;
+  }
+
   public onBoth<T>(func: (result: Result<any>) => T) : T
   {
       return func(this);
+  }
+
+  public async onBothAsync<T>(func: (result: Result<any>) => Promise<T>) : Promise<T>
+  {
+      return await func(this);
   }
 }
