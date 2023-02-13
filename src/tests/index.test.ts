@@ -72,7 +72,8 @@ describe("Result should", () => {
 
     let executed = false;
 
-    let result = success.onSuccessAction(() => {
+    let result = success.onSuccessAction((value) => {
+      expect(value).toBe("OK");
       executed = true;
     });
 
@@ -86,8 +87,9 @@ describe("Result should", () => {
 
     let executed = false;
 
-    let result = success.onSuccess(() => {
+    let result = success.onSuccess((value) => {
       executed = true;
+      expect(value).toBe("OK");
       return Result.ok("Whatever");
     });
 
@@ -102,7 +104,8 @@ describe("Result should", () => {
 
     let executed = false;
 
-    let result = success.onFailure(() => {
+    let result = success.onFailure((error) => {
+      expect(error).toBe("Failed");
       executed = true;
     });
 
@@ -118,7 +121,8 @@ describe("Result should", () => {
 
     let executed = 0;
 
-    let result = success.onBothAction(() => {
+    let result = success.onBothAction((result) => {
+      expect(result.value).toBe("OK");
       executed++;
     });
 
@@ -126,7 +130,8 @@ describe("Result should", () => {
     expect(result.failure).toBe(false);
     expect(executed).toBe(1);
 
-    result = failed.onBothAction(() => {
+    result = failed.onBothAction((result) => {
+      expect(result.error).toBe("Failed");
       executed++;
     });
 
@@ -141,7 +146,8 @@ describe("Result should", () => {
 
     let executed = 0;
 
-    let result = success.onBoth(() => {
+    let result = success.onBoth((result) => {
+      expect(result.value).toBe("OK");
       executed++;
       return Result.ok("Whatever");
     });
@@ -151,7 +157,8 @@ describe("Result should", () => {
     expect(result.value).toBe("Whatever");
     expect(executed).toBe(1);
 
-    result = failed.onBoth(() => {
+    result = failed.onBoth((result) => {
+      expect(result.error).toBe("Failed");
       executed++;
       return Result.error("Whatever");
     });

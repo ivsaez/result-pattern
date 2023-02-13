@@ -66,29 +66,29 @@ export class Result<T> {
     return Result.ok<any>();
   }
 
-  public onSuccessAction(action: () => void) : Result<any>
+  public onSuccessAction(action: (result: T) => void) : Result<any>
   {
       if (this.failure)
           return this;
 
-      action();
+      action(this.value);
 
-      return Result.ok<T>();
+      return Result.ok<T>(this.value);
   }
 
-  public onSuccess(func: () => Result<any>) : Result<any>
+  public onSuccess(func: (result: T) => Result<any>) : Result<any>
   {
       if (this.failure)
           return this;
       
-      return func();
+      return func(this.value);
   }
 
-  public onFailure(action: () => void) : Result<any>
+  public onFailure(action: (error: string) => void) : Result<any>
   {
       if (this.failure)
       {
-          action();
+          action(this.error);
       }
 
       return this;
