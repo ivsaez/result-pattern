@@ -1,22 +1,33 @@
+export const NeutralCode = 0;
+
 export class Result<T> {
   private _success: boolean;
+  private _code: number;
   private _error: string;
   private _value: T;
 
-  private constructor (success: boolean, error?: string, value?: T) {
+  private constructor (success: boolean, code: number, error?: string, value?: T) {
     if (success && error)
       throw new Error("Successful doesn't need error message.");
 
     if (!success && !error)
       throw new Error("Failure result needs error message.");
 
+    if(code < 0)
+      throw new Error("Code must be greater than 0.");
+
     this._success = success;
+    this._code = code;
     this._error = error;
     this._value = value;
   }
 
   get success(){
     return this._success;
+  }
+
+  get code(){
+    return this._code;
   }
 
   get failure(){
@@ -37,12 +48,16 @@ export class Result<T> {
     return this._value;
   }
 
-  public static ok<T>(value?: T) : Result<T> {
-    return new Result<T>(true, null, value);
+  get isNeutralCode(): boolean{
+    return this._code == NeutralCode;
   }
 
-  public static error<T>(error: string): Result<T> {
-    return new Result<T>(false, error);
+  public static ok<T>(value?: T) : Result<T> {
+    return new Result<T>(true, NeutralCode, null, value);
+  }
+
+  public static error<T>(error: string, code: number = NeutralCode): Result<T> {
+    return new Result<T>(false, code, error);
   }
 
   public static combine(results: Result<any>[]) : Result<any> {

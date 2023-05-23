@@ -1,4 +1,3 @@
-import { runInThisContext } from "vm";
 import { Result } from "../index";
 
 describe("Result should", () => {
@@ -17,7 +16,23 @@ describe("Result should", () => {
     expect(failure.success).toBe(false);
     expect(failure.failure).toBe(true);
     expect(failure.error).toBe("WRONG");
+    expect(failure.isNeutralCode).toBe(true);
     expect(() => failure.value).toThrowError();
+  });
+
+  it("create an error with code", () => {
+    let failure = Result.error("WRONG", 1);
+
+    expect(failure.success).toBe(false);
+    expect(failure.failure).toBe(true);
+    expect(failure.error).toBe("WRONG");
+    expect(failure.code).toBe(1);
+    expect(failure.isNeutralCode).toBe(false);
+    expect(() => failure.value).toThrowError();
+  });
+
+  it("throw an exception when create an error with negative neutral code", () => {
+    expect(() => Result.error("WRONG", -1)).toThrowError();
   });
 
   it("combine success", () => {
