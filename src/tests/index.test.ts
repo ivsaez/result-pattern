@@ -31,6 +31,24 @@ describe("Result should", () => {
     expect(() => failure.value).toThrowError();
   });
 
+  it("Map an error result", () => {
+    let failure = Result.error<string>("WRONG", 3);
+
+    let mapped = failure.mapError<boolean>();
+
+    expect(mapped.success).toBe(false);
+    expect(mapped.failure).toBe(true);
+    expect(mapped.error).toBe("WRONG");
+    expect(mapped.code).toBe(3);
+    expect(() => mapped.value).toThrowError();
+  });
+
+  it("throw an exception when map a success result", () => {
+    let success = Result.ok("OK");
+
+    expect(() => success.mapError()).toThrowError();
+  });
+
   it("throw an exception when create an error with negative neutral code", () => {
     expect(() => Result.error("WRONG", -1)).toThrowError();
   });
