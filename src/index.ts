@@ -52,6 +52,13 @@ export class Result<T> {
     return this._code == NeutralCode;
   }
 
+  mapError<U>() : Result<U> {
+    if (this.failure)
+      return Result.error<U>(this.error, this.code);
+
+    throw new Error('Success result cannot be mapped.');
+  }
+
   public static ok<T>(value?: T) : Result<T> {
     return new Result<T>(true, NeutralCode, null, value);
   }
